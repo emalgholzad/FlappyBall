@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="assets/images/icon.png" />
+    <title>Flappy Ball</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+
+<body>
+
+    <canvas id="playground"></canvas>
+    <script src="assets/lib/Draw.js"></script>
+    <script>
+        //960x640
+         //320x480
+        var gameWidth = 320;
+        var gameHeight = 480;
+
+        var kickCounter = 0;
+        var scoreCounter = 0;
+
+        Draw.init('playground', gameWidth, gameHeight);
+
+         //Ball
+        var Ball = {
+            x: gameWidth / 2,
+            y: 50,
+            diameter: 30,
+            speed: 100,
+            color: '#7E9090',
+        };
+
+         //Ground
+        var groundHeight = 48;
+
+        var Ground = {
+            x: 0,
+            y: gameHeight - groundHeight,
+            w: gameWidth,
+            h: groundHeight,
+            c: '#849044',
+            bottom: function () {
+                return this.y;
+            }
+
+        };
+
+         //Wall
+        var Wall = {
+            xTop: 320,
+            yTop: 0,
+            wTop: 80,
+            hTop: 144,
+            xBottom: 320,
+            yBottom: (gameHeight - groundHeight) - 144,
+            wBottom: 80,
+            hBottom: 144,
+            speed: 100,
+            color: '#C49D74'
+        };
+
+         //KEYS
+        var canvasPlayground = document.getElementById('playground');
+        var tapToGoUp;
+
+        var iDevice = (navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false);
+
+        if (iDevice == true) {
+            var keyEventDown = 'touchstart';
+            var keyEventUp = 'touchend';
+        } else {
+            var keyEventDown = 'mousedown';
+            var keyEventUp = 'mouseup';
+        }
+
+         //touchstart = mousedown
+        canvasPlayground.addEventListener(keyEventDown, function (e) {
+            e.preventDefault();
+            tapToGoUp = true;
+            kickCounter++;
+        }, false);
+
+         //touchend = mouseup
+        canvasPlayground.addEventListener(keyEventUp, function (e) {
+            e.preventDefault();
+            tapToGoUp = false;
+        }, false);
+
+        function update(mod) {
+            if (tapToGoUp == true) {
+
+                Ball.y = Ball.y - 3;
+
+            } else if (tapToGoUp == false) {
+
+                Ball.y = Ball.y + Ball.speed * mod;
+
+            } else {
+
+                Ball.y = Ball.y + Ball.speed * mod;
+            }
+        }
+
+        function render() {
+            //clear canvas
+            Draw.clear(0, 0, gameWidth, gameHeight);
+
+            //draw ground
+            Draw.rectangle(Ground.x, Ground.y, Ground.w, Ground.h, Ground.c);
+
+            //draw ball
+            Draw.circle(Ball.x, Ball.y, Ball.diameter, Ball.color);
+
+            //draw walls
+            Draw.rectangle(Wall.xTop, Wall.yTop, Wall.wTop, Wall.hTop, Wall.color);
+            Draw.rectangle(Wall.xBottom, Wall.yBottom, Wall.wBottom, Wall.hBottom, Wall.color);
+            Wall.xTop--;
+            Wall.xBottom--;
+
+            if (Wall.xTop <= -Wall.wTop || Wall.xBottom <= -Wall.wTop) {
+
+                Wall.xTop = gameWidth;
+                Wall.xBottom = gameWidth;
+                
+                scoreCounter++;
+
+                //Wall.hTop = 200;
+            }
+
+            //Ball touches the bottom of the ground
+            if (Ball.y >= (Ground.bottom() - Ball.diameter)) {
+
+                Draw.text("GAME OVER", gameWidth / 2, gameHeight / 2, 15, 'red', 'center');
+                clearInterval(gameInterval);
+            }
+
+            //draw text
+            Draw.text("Score: " + scoreCounter, 10, 10, 15, 'black', 'left');
+            
+            //Touch Ball with Wall
+            if (
+                Ball.x < Wall.xTop + Wall.wTop &&
+                Ball.x + Ball.diameter > Wall.xTop &&
+                Ball.y < Wall.yTop + Wall.hTop &&
+                Ball.y + Ball.diameter > Wall.yTop
+            ) {
+                Draw.text("GAME OVER", gameWidth / 2, gameHeight / 2, 15, 'red', 'center');
+                clearInterval(gameInterval);
+                
+            } else if (
+                Ball.x < Wall.xBottom + Wall.wBottom &&
+                Ball.x + Ball.diameter > Wall.xBottom &&
+                Ball.y < Wall.yBottom + Wall.hBottom &&
+                Ball.y + Ball.diameter > Wall.yBottom
+            
+            ) {
+                Draw.text("GAME OVER", gameWidth / 2, gameHeight / 2, 15, 'red', 'center');
+                clearInterval(gameInterval);
+            }
+
+        }
+
+        function run() {
+            update((Date.now() - time) / 1000);
+            render();
+            time = Date.now();
+        }
+
+        var time = Date.now();
+
+         //Call run() function every 10 miliseconds.
+        var gameInterval = setInterval(run, 10);
+    </script>
+</body>
+
+</html>
