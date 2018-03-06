@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="apple-touch-icon" href="assets/images/icon.png" />
-    <title>Flappy Ball</title>
+    <title>FlappyBall</title>
     <link rel="stylesheet" href="assets/css/main.css">
 </head>
 
@@ -93,15 +93,10 @@
 
         function update(mod) {
             if (tapToGoUp == true) {
-
                 Ball.y = Ball.y - 3;
-
             } else if (tapToGoUp == false) {
-
                 Ball.y = Ball.y + Ball.speed * mod;
-
             } else {
-
                 Ball.y = Ball.y + Ball.speed * mod;
             }
         }
@@ -122,13 +117,10 @@
             Wall.xTop--;
             Wall.xBottom--;
 
-            if (Wall.xTop <= -Wall.wTop || Wall.xBottom <= -Wall.wTop) {
-
+            if (Wall.xTop <= -Wall.wTop || Wall.xBottom <= -Wall.wTop)
                 Wall.xTop = gameWidth;
                 Wall.xBottom = gameWidth;
-                
                 scoreCounter++;
-
                 //Wall.hTop = 200;
             }
 
@@ -139,9 +131,9 @@
                 clearInterval(gameInterval);
             }
 
-            //draw text
+            //Draw text
             Draw.text("Score: " + scoreCounter, 10, 10, 15, 'black', 'left');
-            
+
             //Touch Ball with Wall
             if (
                 Ball.x < Wall.xTop + Wall.wTop &&
@@ -151,18 +143,15 @@
             ) {
                 Draw.text("GAME OVER", gameWidth / 2, gameHeight / 2, 15, 'red', 'center');
                 clearInterval(gameInterval);
-                
             } else if (
                 Ball.x < Wall.xBottom + Wall.wBottom &&
                 Ball.x + Ball.diameter > Wall.xBottom &&
                 Ball.y < Wall.yBottom + Wall.hBottom &&
                 Ball.y + Ball.diameter > Wall.yBottom
-            
             ) {
                 Draw.text("GAME OVER", gameWidth / 2, gameHeight / 2, 15, 'red', 'center');
                 clearInterval(gameInterval);
             }
-
         }
 
         function run() {
